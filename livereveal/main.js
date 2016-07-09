@@ -255,13 +255,23 @@ function Revealer() {
     }
 
     // check if any of these options are set in config info; if so, then use them
-    $.each(['center'], function(index,key) {
+    $.each(['center','margin','width','height'], function(index,key) {
         var val = config.get_sync(key);
         if (val !== undefined)
         {
             options[key] = val;
         }
     });
+    function checkPercent(key, wkey) {
+        console.log(key,options[key]);
+        if ((options[key]+"").endsWith('%'))
+        {
+            var x = +options[key].slice(0,-1) / 100.0 * window[wkey];
+            options[key] = x;
+        }
+    }
+    checkPercent('width','innerWidth');
+    checkPercent('height','innerHeight');
 
     Reveal.initialize(options);
 
