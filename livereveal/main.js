@@ -254,6 +254,15 @@ function Revealer() {
         options.leap = leap;
     }
 
+    // check if any of these options are set in config info; if so, then use them
+    $.each(['center'], function(index,key) {
+        var val = config.get_sync(key);
+        if (val !== undefined)
+        {
+            options[key] = val;
+        }
+    });
+
     Reveal.initialize(options);
 
     Reveal.addEventListener( 'ready', function( event ) {
