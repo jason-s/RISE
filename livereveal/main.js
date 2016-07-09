@@ -34,10 +34,30 @@ var default_config = {
 
 config_section.load();
 
-if(IPython.notebook.metadata.livereveal !== undefined){
-    default_config = $.extend(true, default_config, IPython.notebook.metadata.livereveal);
-}
 var config = new configmod.ConfigWithDefaults(config_section, default_config);
+var metadata_loaded = false;
+function load_metadata(evtname)
+{
+    // only run this once
+	if (metadata_loaded)
+		return;
+
+	metadata_loaded = true;
+	if (IPython.notebook.metadata.livereveal !== undefined){
+		console.log("livereveal getting default config (%s)", evtname);
+		default_config = $.extend(true, default_config, IPython.notebook.metadata.livereveal);
+		config = new configmod.ConfigWithDefaults(config_section, default_config);
+	}
+}
+
+require(['base/js/namespace', 'base/js/events'], function (IPython, events) {
+	$.each(['notebook_loaded.Notebook','kernel_ready.Kernel','kernel_created.Session'],
+		function(index, evtname)
+		{
+			events.on(evtname, function() { load_metadata(evtname); });
+		}
+	);
+});
 
 Object.getPrototypeOf(IPython.notebook).get_cell_elements = function () {
   /*
